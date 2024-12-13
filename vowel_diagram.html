@@ -50,7 +50,7 @@
         ctx.fillText('F2 (Hz)', margin - 90, margin);
 
         const F2Min = 500;
-        const F2Max = 2700;
+        const F2Max = 2900;
         for (let i = F2Min; i <= F2Max; i += 100) {
             const x = margin + width - ((i - F2Min) / (F2Max - F2Min) * width);
             // Drawing F2 ticks
@@ -102,13 +102,13 @@
 
         // Cardinal vowels and schwa with F1 and F2 values (approximate)
         const cardinalVowels = [
-            { label: 'i', F1: 200, F2: 2600 },
-            { label: 'y', F1: 200, F2: 2200 },
+            { label: 'i', F1: 200, F2: 2800 },
+            { label: 'y', F1: 200, F2: 2300 },
 
-            { label: 'e', F1: 400, F2: 2400 },
+            { label: 'e', F1: 400, F2: 2500 },
             { label: 'ø', F1: 400, F2: 2100 },
 
-            { label: 'ɛ', F1: 600, F2: 2100 },
+            { label: 'ɛ', F1: 600, F2: 2200 },
             { label: 'œ', F1: 600, F2: 1900 },
 
             { label: 'a', F1: 800, F2: 1900 },
@@ -130,11 +130,16 @@
         ];
         const schwa = [{ label: 'ə', F1: 500, F2: 1500 }]
 
-        
+
         //Drawing vowels
-        cardinalVowels.forEach(vowel => {
+        const getPosition = (vowel) => {
             const x = margin + width - ((vowel.F2 - F2Min) / (F2Max - F2Min) * width); 
             const y = margin + ((vowel.F1 - F1Min) / (F1Max - F1Min) * height); 
+            return { x, y };
+        };
+
+        cardinalVowels.forEach(vowel => {
+            const { x, y } = getPosition(vowel);
             ctx.beginPath();
             ctx.arc(x, y, 5, 0, Math.PI * 2);
             ctx.fillStyle = 'red';
@@ -143,6 +148,24 @@
             ctx.fillText(vowel.label, x + 10, y - 10);
         });
 
+        // Drawing diagramm lines
+        const connections = [
+            ['i', 'y'], ['y', 'ø'], ['ø', 'e'], ['e', 'i'], ['e', 'ɛ'], ['œ', 'ø'],
+            ['ɛ', 'œ'], ['ɛ', 'a'], ['a', 'ɶ'], ['ɶ', 'œ'],
+            ['ɯ', 'u'], ['u', 'o'], ['ɤ', 'o'], ['ɤ', 'ɯ'], ['o', 'ɔ'], ['ʌ', 'ɤ'],
+            ['ɔ', 'ɒ'], ['ɑ', 'ɒ'], ['ɑ', 'ʌ'],  ['ɔ', 'ʌ']
+        ];
+
+        connections.forEach(([vowel1, vowel2]) => {
+            const pos1 = getPosition(cardinalVowels.find(v => v.label === vowel1));
+            const pos2 = getPosition(cardinalVowels.find(v => v.label === vowel2));
+            ctx.beginPath();
+            ctx.moveTo(pos1.x, pos1.y);
+            ctx.lineTo(pos2.x, pos2.y);
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        });
     </script>
 </body>
 </html>
